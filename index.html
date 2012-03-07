@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>nyc subway status</title>
+	<meta name="author" content="Kurt Guenther">
+</head>
+<script>
+</script>
+<style>
+body
+{
+    -webkit-font-smoothing: antialiased;	
+	font-family:Lucida Grande, Helvetica, san-serif;
+	color:#fff;
+	background:#000;
+	text-align:center;
+}
+
+.title
+{
+	text-align:center;
+	font-size:48px;
+}
+
+#working span, #not_working span
+{
+	font-size:86px;
+	display:inline-block;
+	border-radius:50px;
+	width:100px;
+	text-align:center;
+	margin-bottom:5px;
+}
+
+.c123
+{
+	background:#EE352E;
+}
+
+.cACE
+{
+	background:#2850AD;
+}
+
+.cNQR
+{
+	background:#FCCC0A;
+}
+
+.c7
+{
+	background:#B933AD;
+}
+
+.cG
+{
+	background:#6CBE45;
+}
+
+.cBDFM
+{
+	background:#FF6319;
+}
+
+.c456
+{
+	background:#00933C;
+}
+
+.cS
+{
+	background:#808183;
+}
+
+.cJZ
+{
+	background:#996633;
+}
+
+.cL
+{
+	background:#A7A9AC;
+}
+
+#working, #not_working
+{
+	display:inline-block;
+	vertical-align:top;
+}
+
+#working
+{
+	padding-right:45px;
+}
+
+
+
+.footer
+{
+	padding-top:45px;
+	font-size:25px;
+}
+
+.footer a
+{
+	color:#fff;
+}
+
+</style>
+<body>
+<div id="working">
+	<div class="title">working</div>
+	{% for line in lines %}
+		{% ifequal line.status "GOOD SERVICE" %}
+			{% for number in line.individuals %}
+			<span class="c{{line.name}}">{{number}}</span>
+			{% endfor %}
+			<br>
+		{% endifequal %}
+	{% endfor %}
+</div>
+<div id="not_working">
+<div class="title"> not working</div>
+{% for line in lines %}
+	{% ifnotequal line.status "GOOD SERVICE" %}
+		{% for number in line.individuals %}
+		<span class="c{{line.name}}">{{number}}</span>
+		{% endfor %}
+		<br>
+	{% endifnotequal %}
+{% endfor %}
+</div>
+<div class="footer">
+	updated every minute (<a href="./">refresh</a>)
+	<br>
+	<a href="http://kurtguenther.me">kurt guenther says hello.</a>
+</div>
+</body>
+</html>
