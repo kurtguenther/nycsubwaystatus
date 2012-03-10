@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import os
+import os, logging
 from datetime import datetime
 
 from google.appengine.ext import webapp
@@ -26,6 +26,24 @@ from xml.dom import minidom
 MTA_URL = 'http://www.mta.info/status/serviceStatus.txt'
 MEMCACHE_MTA_DATA_KEY = 'mta-data'
 MEMCACHE_RENDERED_TEMPLATE_KEY = 'rendered-tempalte'
+
+DEBUG = False
+
+ADA_MESSAGE = '<table class=plannedworkTableStyle  border=1 cellspacing=1 cellpadding=5 rules=none frame=box><td>&nbsp;&nbsp;[ad]&nbsp;&nbsp;<td><font size=1>This service change affects one or more ADA accessible stations. Please call 511 for help with planning <br clear=left>your trip. If you are deaf or hard of hearing, use your preferred relay service provider or the free 711 relay.  </font></table>'
+
+def clean_up_html(old_html):
+    new_html = old_html
+    
+    path = os.path.join(os.path.dirname(__file__), 'spaceless.html')
+    new_html = template.render(path, {'html': new_html})    
+    
+    new_html = new_html.replace(ADA_MESSAGE, '')    
+    logging.info(new_html)
+    new_html = new_html.replace('<br/> <br/> <br/>','')
+    new_html = new_html.replace('<br> <br><b> <br>','<br><b>')
+
+    
+    return new_html
 
 class MainHandler(webapp.RequestHandler):
     def query_mta_service(self):
@@ -52,7 +70,10 @@ class MainHandler(webapp.RequestHandler):
         self.response.headers['ETag'] = datetime.now().minute
         
         
-        rendered_template = memcache.get(MEMCACHE_RENDERED_TEMPLATE_KEY)
+        if not DEBUG:
+            rendered_template = memcache.get(MEMCACHE_RENDERED_TEMPLATE_KEY)
+        else:
+            rendered_template = None
         
         if not rendered_template:
             xml_data = self.get_mta_data()
@@ -65,6 +86,7 @@ class MainHandler(webapp.RequestHandler):
                 status = line.getElementsByTagName('status')[0].childNodes[0].data
                 if len(line.getElementsByTagName('text')[0].childNodes):
                     html = line.getElementsByTagName('text')[0].childNodes[0].data
+                    html = clean_up_html(html)
                 else:
                     html = None
                 if name != 'SIR':

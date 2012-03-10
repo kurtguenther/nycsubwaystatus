@@ -104,7 +104,15 @@ body
 	padding-right:45px;
 }
 
+.status
+{
+	padding:10px;
+}
 
+div.status>span
+{
+	font-weight:bolder;
+}
 
 .footer
 {
@@ -119,6 +127,12 @@ body
 
 .hidden{
 	display:none;
+}
+
+tr[bgcolor=FAF8CC]
+{
+	background-color:#fff;
+	color:#000;
 }
 
 </style>
@@ -167,12 +181,9 @@ function ShowHide(int){
 			{% endfor %}
 			</a>			
 			<br>
-			<div id="status_{{line.name}}" class="status hidden line_status">
-				<div>{{line.html}}</div>
-			</div>
+			<div id="status_{{line.name}}" class="status hidden line_status">{{line.html}}</div>
 		</div>
 	{% endifnotequal %}
-	
 {% endfor %}
 </div>
 <div class="footer">
