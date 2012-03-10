@@ -125,8 +125,14 @@ div.status>span
 	color:#fff;
 }
 
-.hidden{
+.hidden {
 	display:none;
+}
+
+.show-status
+{
+	display: block;
+	border: solid 1px #fff;
 }
 
 tr[bgcolor=FAF8CC]
@@ -139,19 +145,15 @@ tr[bgcolor=FAF8CC]
 <script type="text/javascript">
 function showLine(line)
 {
-	if($('#status_' + line).css('display') == 'none')
-	{	
-		$('.status').css('display', 'none');
-		$('.line').css('border','none');
-		$('#status_' + line).toggle();
-		$('#line_' + line).css('border','solid 1px #fff');
+	if($('#status_' + line).hasClass('show-status'))
+	{
+		$('#status_' + line).removeClass('show-status');
 	}
 	else
 	{
-		$('.status').css('display', 'none');
-		$('.line').css('border','none');
+		$('.show-status').removeClass('show-status');
+		$('#status_' + line).addClass('show-status')
 	}
-
 }
 
 function ShowHide(int){

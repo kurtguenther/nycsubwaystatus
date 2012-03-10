@@ -37,12 +37,12 @@ def clean_up_html(old_html):
     path = os.path.join(os.path.dirname(__file__), 'spaceless.html')
     new_html = template.render(path, {'html': new_html})    
     
-    new_html = new_html.replace(ADA_MESSAGE, '')    
-    logging.info(new_html)
+    new_html = new_html.replace(ADA_MESSAGE, '')
+    if DEBUG:
+        logging.info(new_html)
     new_html = new_html.replace('<br/> <br/> <br/>','')
     new_html = new_html.replace('<br> <br><b> <br>','<br><b>')
 
-    
     return new_html
 
 class MainHandler(webapp.RequestHandler):
