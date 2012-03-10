@@ -6,6 +6,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>nyc subway status</title>
 	<meta name="author" content="Kurt Guenther">
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
 <script>
 </script>
@@ -19,13 +20,19 @@ body
 	text-align:center;
 }
 
+#not_working a
+{
+	color:#fff;
+	text-decoration:none;
+}
+
 .title
 {
 	text-align:center;
 	font-size:48px;
 }
 
-#working span, #not_working span
+.circle
 {
 	font-size:86px;
 	display:inline-block;
@@ -89,6 +96,7 @@ body
 {
 	display:inline-block;
 	vertical-align:top;
+	width:420px;
 }
 
 #working
@@ -109,14 +117,40 @@ body
 	color:#fff;
 }
 
+.hidden{
+	display:none;
+}
+
 </style>
+<script type="text/javascript">
+function showLine(line)
+{
+	if($('#status_' + line).css('display') == 'none')
+	{	
+		$('.status').css('display', 'none');
+		$('.line').css('border','none');
+		$('#status_' + line).toggle();
+		$('#line_' + line).css('border','solid 1px #fff');
+	}
+	else
+	{
+		$('.status').css('display', 'none');
+		$('.line').css('border','none');
+	}
+
+}
+
+function ShowHide(int){
+	$('#' + int).toggle();
+}
+</script>
 <body>
 <div id="working">
 	<div class="title">working</div>
 	{% for line in lines %}
 		{% ifequal line.status "GOOD SERVICE" %}
 			{% for number in line.individuals %}
-			<span class="c{{line.name}}">{{number}}</span>
+			<span class="circle c{{line.name}}">{{number}}</span>
 			{% endfor %}
 			<br>
 		{% endifequal %}
@@ -126,11 +160,19 @@ body
 <div class="title">not working</div>
 {% for line in lines %}
 	{% ifnotequal line.status "GOOD SERVICE" %}
-		{% for number in line.individuals %}
-		<span class="c{{line.name}}">{{number}}</span>
-		{% endfor %}
-		<br>
+		<div id='line_{{line.name}}' class="line">
+			<a href="javascript://" onclick="showLine('{{line.name}}')">
+			{% for number in line.individuals %}
+				<span class="circle c{{line.name}}">{{number}}</span>
+			{% endfor %}
+			</a>			
+			<br>
+			<div id="status_{{line.name}}" class="status hidden line_status">
+				<div>{{line.html}}</div>
+			</div>
+		</div>
 	{% endifnotequal %}
+	
 {% endfor %}
 </div>
 <div class="footer">

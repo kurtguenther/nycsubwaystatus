@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 import os
+from datetime import datetime
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util, template
@@ -24,6 +25,7 @@ from xml.dom import minidom
 
 MTA_URL = 'http://www.mta.info/status/serviceStatus.txt'
 MEMCACHE_MTA_DATA_KEY = 'mta-data'
+MEMCACHE_RENDERED_TEMPLATE_KEY = 'rendered-tempalte'
 
 class MainHandler(webapp.RequestHandler):
     def query_mta_service(self):
@@ -46,23 +48,35 @@ class MainHandler(webapp.RequestHandler):
     
     def get(self):
         self.response.headers['Cache-Control'] = 'public, max-age:300'
+        self.response.headers['Pragma'] = 'Public'
+        self.response.headers['ETag'] = datetime.now().minute
         
-        xml_data = self.get_mta_data()
-        dom_data = minidom.parseString(xml_data)
         
-        statuses = []
+        rendered_template = memcache.get(MEMCACHE_RENDERED_TEMPLATE_KEY)
         
-        for line in dom_data.getElementsByTagName('subway')[0].getElementsByTagName('line'):
-            name = line.getElementsByTagName('name')[0].childNodes[0].data
-            status = line.getElementsByTagName('status')[0].childNodes[0].data
-            if name != 'SIR':
-                statuses.append({'name': name, 'status': status, 'individuals': list(name)})
-                    
+        if not rendered_template:
+            xml_data = self.get_mta_data()
+            dom_data = minidom.parseString(xml_data)
 
-        values = {'lines': statuses}
-        path = os.path.join(os.path.dirname(__file__), 'index.html')
-        self.response.out.write(template.render(path, values))
+            statuses = []
 
+            for line in dom_data.getElementsByTagName('subway')[0].getElementsByTagName('line'):
+                name = line.getElementsByTagName('name')[0].childNodes[0].data
+                status = line.getElementsByTagName('status')[0].childNodes[0].data
+                if len(line.getElementsByTagName('text')[0].childNodes):
+                    html = line.getElementsByTagName('text')[0].childNodes[0].data
+                else:
+                    html = None
+                if name != 'SIR':
+                    statuses.append({'name': name, 'status': status, 'individuals': list(name), 'html': html})
+            
+            values = {'lines': statuses}
+            path = os.path.join(os.path.dirname(__file__), 'index.html')
+            rendered_template = template.render(path, values)
+            
+            memcache.set(MEMCACHE_RENDERED_TEMPLATE_KEY, rendered_template, 1 * 60)            
+    
+        self.response.out.write(rendered_template)
 
 def main():
     application = webapp.WSGIApplication([('/', MainHandler)],
