@@ -23,6 +23,7 @@ from google.appengine.api import memcache, urlfetch
 
 from xml.dom import minidom
 
+
 MTA_URL = 'http://www.mta.info/status/serviceStatus.txt'
 MEMCACHE_MTA_DATA_KEY = 'mta-data'
 MEMCACHE_RENDERED_TEMPLATE_KEY = 'rendered-tempalte'
@@ -30,6 +31,13 @@ MEMCACHE_RENDERED_TEMPLATE_KEY = 'rendered-tempalte'
 DEBUG = os.environ.get('SERVER_SOFTWARE','').startswith('Development')
 
 ADA_MESSAGE = '<table class=plannedworkTableStyle  border=1 cellspacing=1 cellpadding=5 rules=none frame=box><td>&nbsp;&nbsp;[ad]&nbsp;&nbsp;<td><font size=1>This service change affects one or more ADA accessible stations. Please call 511 for help with planning <br clear=left>your trip. If you are deaf or hard of hearing, use your preferred relay service provider or the free 711 relay.  </font></table>'
+
+IN_MEMORY_TEMPLATE = None
+IN_MEMORY_MINUTE = None
+
+def set_in_memory_cache(template, minute):
+    IN_MEMORY_TEMPLATE = template
+    IN_MEMORY_MINUTE = minute
 
 def clean_up_html(old_html):
     new_html = old_html
@@ -67,11 +75,12 @@ class MainHandler(webapp.RequestHandler):
     def get(self):
         self.response.headers['Cache-Control'] = 'public, max-age:300'
         self.response.headers['Pragma'] = 'Public'
-        self.response.headers['ETag'] = datetime.now().minute
-        
         
         if not DEBUG:
-            rendered_template = memcache.get(MEMCACHE_RENDERED_TEMPLATE_KEY)
+            if IN_MEMORY_MINUTE == datetime.now().minute:
+                rendered_template = IN_MEMORY_TEMPLATE
+            else:
+                rendered_template = memcache.get(MEMCACHE_RENDERED_TEMPLATE_KEY)
         else:
             rendered_template = None
         
@@ -96,7 +105,9 @@ class MainHandler(webapp.RequestHandler):
             path = os.path.join(os.path.dirname(__file__), 'index.html')
             rendered_template = template.render(path, values)
             
-            memcache.set(MEMCACHE_RENDERED_TEMPLATE_KEY, rendered_template, 1 * 60)            
+            #set caches
+            memcache.set(MEMCACHE_RENDERED_TEMPLATE_KEY, rendered_template, 1 * 60)   
+            set_in_memory_cache(rendered_template, datetime.now().minute)   
     
         self.response.out.write(rendered_template)
 
