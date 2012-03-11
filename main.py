@@ -27,7 +27,7 @@ MTA_URL = 'http://www.mta.info/status/serviceStatus.txt'
 MEMCACHE_MTA_DATA_KEY = 'mta-data'
 MEMCACHE_RENDERED_TEMPLATE_KEY = 'rendered-tempalte'
 
-DEBUG = False
+DEBUG = True
 
 ADA_MESSAGE = '<table class=plannedworkTableStyle  border=1 cellspacing=1 cellpadding=5 rules=none frame=box><td>&nbsp;&nbsp;[ad]&nbsp;&nbsp;<td><font size=1>This service change affects one or more ADA accessible stations. Please call 511 for help with planning <br clear=left>your trip. If you are deaf or hard of hearing, use your preferred relay service provider or the free 711 relay.  </font></table>'
 

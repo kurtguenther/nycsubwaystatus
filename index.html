@@ -26,6 +26,12 @@ body
 	text-decoration:none;
 }
 
+.details
+{
+	font-size:12px;
+	padding-bottom:5px;
+}
+
 .title
 {
 	text-align:center;
@@ -163,6 +169,7 @@ function ShowHide(int){
 <body>
 <div id="working">
 	<div class="title">working</div>
+	<div class="details">&nbsp;</div>
 	{% for line in lines %}
 		{% ifequal line.status "GOOD SERVICE" %}
 			{% for number in line.individuals %}
@@ -174,6 +181,7 @@ function ShowHide(int){
 </div>
 <div id="not_working">
 <div class="title">not working</div>
+<div class="details"> (click for details)</div>
 {% for line in lines %}
 	{% ifnotequal line.status "GOOD SERVICE" %}
 		<div id='line_{{line.name}}' class="line">
@@ -192,6 +200,9 @@ function ShowHide(int){
 	updated every minute (<a href="./">refresh</a>)
 	<br>
 	<a href="http://kurtguenther.me">kurt guenther says hello.</a>
+	<br>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.nycsubwaystatus.com" data-text="Is any subway running?" data-via="heykurtg" data-hashtags="MTA">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 </div>
 
 <script type="text/javascript">
