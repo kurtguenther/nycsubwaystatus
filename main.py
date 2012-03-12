@@ -73,7 +73,7 @@ class MainHandler(webapp.RequestHandler):
         return xml_data
     
     def get(self):
-        self.response.headers['Cache-Control'] = 'public, max-age:300'
+        self.response.headers['Cache-Control'] = 'public, max-age=61'
         self.response.headers['Pragma'] = 'Public'
         
         if not DEBUG:
