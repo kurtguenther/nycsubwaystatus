@@ -173,7 +173,7 @@ function ShowHide(int){
 </script>
 <body>
 <div id="working">
-	<div class="title">working</div>
+	<div class="title">normal</div>
 	<div class="details">&nbsp;</div>
 	{% for line in lines %}
 		{% ifequal line.status "GOOD SERVICE" %}
@@ -185,7 +185,7 @@ function ShowHide(int){
 	{% endfor %}
 </div>
 <div id="not_working">
-<div class="title">not working</div>
+<div class="title">not normal</div>
 <div class="details"> (click for details)</div>
 {% for line in lines %}
 	{% ifnotequal line.status "GOOD SERVICE" %}
