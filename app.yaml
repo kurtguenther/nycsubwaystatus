@@ -1,6 +1,7 @@
 application: nycsubwaystatus
 version: 5
-runtime: python
+runtime: python27
+threadsafe: no
 api_version: 1
 
 handlers:
